@@ -14,7 +14,10 @@ class ViewController: UIViewController, UITextFieldDelegate{
     
     @IBOutlet weak var code: UITextField!
    
-    @IBOutlet weak var resultado: UILabel!
+    @IBOutlet weak var portada: UILabel!
+    @IBOutlet weak var autor: UILabel!
+    @IBOutlet weak var name: UILabel!
+
     
         func sincrono() {
             let code = self.code.text!
@@ -25,40 +28,56 @@ class ViewController: UIViewController, UITextFieldDelegate{
             if (datos != nil) {
                 let texto = NSString(data: datos! as Data, encoding: String.Encoding.utf8.rawValue)
                 print(texto!)
-                resultado.text = texto as String!
+                portada.text = texto as String!
             } else {
-                resultado.text = "No hay conexión a Internet"
+                portada.text = "No hay conexión a Internet"
             }
-        }
         
-
+    do {
+    let json = try JSONSerialization.jsonObject(with: datos! as Data, options: JSONSerialization.ReadingOptions.mutableLeaves)
+    let dico1 = json as! NSDictionary
+    let dico2 = dico1["ISBN:\(code)"] as! NSDictionary
+    self.name.text = dico2["title"] as! NSString as String
+    let dico3 = dico2["authors"] as! NSDictionary
+    self.autor.text = dico3["name"] as! NSString as String
+    self.portada.text = "http://covers.openlibrary.org/b/isbn/\(code)-L.jpg"
+    
+    }
+    catch _ {
+    
+    }
+    }
     
     override func viewDidLoad() {
-        sincrono()
+       
         code.delegate = self
 
        
+                super.viewDidLoad()
         
-        super.viewDidLoad()
+       
         // Do any additional setup after loading the view, typically from a nib.
-    
+     self.code.delegate = self;
     
     }
     
     @IBAction func textFieldDoneEditing(sender : UITextField)
     {
         sender.resignFirstResponder()
-        sincrono()
+    
     }
 
     @IBAction func backgroundTap(sender: UIControl){
         code.resignFirstResponder()
-        resultado.resignFirstResponder()}
+        portada.resignFirstResponder()}
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        
     }
-
+    
+    
+    
 
 }
 
